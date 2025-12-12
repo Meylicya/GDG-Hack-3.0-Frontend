@@ -77,6 +77,7 @@ const AccessibilityToolbar = ({
           <option value="es">Español</option>
           <option value="fr">Français</option>
           <option value="de">Deutsch</option>
+          <option value="ar">العربية</option>
         </select>
       </div>
     </div>

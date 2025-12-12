@@ -1,4 +1,3 @@
-// pages/TaskListPage.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './TaskListPage.css';
@@ -8,18 +7,15 @@ const TaskListPage = () => {
     { id: 1, title: "Take morning medicine", completed: true },
     { id: 2, title: "Check blood pressure", completed: true },
     { id: 3, title: "Drink a glass of water", completed: false },
-    { id: 4, title: "5-minute breathing exercise", completed: false },
-    { id: 5, title: "Walk for 10 minutes", completed: false },
+    { id: 4, title: "Walk for 5 minutes", completed: false },
+    { id: 5, title: "5-minute breathing exercise", completed: false },
     { id: 6, title: "Take afternoon vitamins", completed: false },
-    { id: 7, title: "Evening medication", completed: false },
-    { id: 8, title: "Prepare for tomorrow", completed: false },
   ]);
 
   const toggleTask = (taskId) => {
     setTasks(tasks.map(task => {
       if (task.id === taskId) {
         const completed = !task.completed;
-        // Provide feedback
         if (completed) {
           if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
           // Play success sound

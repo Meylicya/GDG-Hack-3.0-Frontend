@@ -1,4 +1,3 @@
-/* pages/MessagesPage.css */
 .messages-container {
   min-height: 100vh;
   background: var(--off-white);
@@ -139,7 +138,6 @@
   font-size: 0.9em;
 }
 
-/* Quick Actions */
 .quick-actions {
   display: flex;
   flex-direction: column;
@@ -190,7 +188,6 @@
   background: var(--white);
 }
 
-/* Chat Header */
 .chat-header {
   padding: 20px;
   border-bottom: 1px solid var(--light-gray);
@@ -326,7 +323,6 @@
   opacity: 0.8;
 }
 
-/* Message Input */
 .message-input-form {
   padding: 20px;
   border-top: 1px solid var(--light-gray);
@@ -394,7 +390,7 @@
   cursor: not-allowed;
 }
 
-/* Accessibility Tips */
+/* Accessibility messages */
 .accessibility-tips {
   background: var(--light-blue);
   padding: 16px;
@@ -408,7 +404,6 @@
   margin: 4px 0;
 }
 
-/* No Contact Selected */
 .no-contact-selected {
   flex: 1;
   display: flex;
@@ -436,7 +431,6 @@
   font-size: 1.1em;
 }
 
-/* Voice Announcement */
 .voice-announcement {
   position: fixed;
   bottom: 100px;
@@ -451,7 +445,6 @@
   z-index: 1000;
 }
 
-/* Loading */
 .messages-loading {
   display: flex;
   flex-direction: column;
@@ -461,7 +454,6 @@
   background: var(--off-white);
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
   .messages-layout {
     flex-direction: column;

@@ -1,4 +1,3 @@
-// pages/UserDashboard.js - Updated version
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './UserDashboard.css';
@@ -21,8 +20,8 @@ const UserDashboard = ({ userData, onLogout }) => {
   ]);
   
   const [messages, setMessages] = useState([
-    { id: 1, senderName: "Sarah", preview: "How are you feeling today?" },
-    { id: 2, senderName: "Dr. Chen", preview: "Your test results are ready" },
+    { id: 1, senderName: "Sarah B.", preview: "How are you feeling today?" },
+    { id: 2, senderName: "Dr. Mohamed", preview: "Your test results are ready" },
     { id: 3, senderName: "Family", preview: "Visiting this weekend" }
   ]);
   
@@ -104,12 +103,12 @@ const UserDashboard = ({ userData, onLogout }) => {
           Logout
         </button>
         <h1 className="greeting">
-          Good Morning, {userData?.name || 'Sam'} 👋
+          Good Morning, {userData?.name || 'Samir A.'} 👋
         </h1>
         <p className="date-subtext">{formatDate(currentTime)}</p>
       </header>
 
-      {/* Progress Bar - Keep as it used to be */}
+      {/* Progress Bar  */}
       <div className="progress-section">
         <div className="progress-header">
           <span className="progress-label">Daily Progress</span>
@@ -129,7 +128,7 @@ const UserDashboard = ({ userData, onLogout }) => {
       </div>
 
       <div className="dashboard-grid">
-        {/* Today's Tasks Card - Keep as it used to be */}
+        {/* Today's Tasks */}
         <div className="dashboard-card">
           <div className="card-header">
             <span className="card-icon" role="img" aria-label="Tasks">✅</span>
@@ -179,7 +178,7 @@ const UserDashboard = ({ userData, onLogout }) => {
           </button>
         </div>
 
-        {/* Schedule Card - Keep as it used to be */}
+        {/* Schedule Card */}
         <div className="dashboard-card">
           <div className="card-header">
             <span className="card-icon" role="img" aria-label="Schedule">📅</span>
@@ -199,7 +198,6 @@ const UserDashboard = ({ userData, onLogout }) => {
           </button>
         </div>
 
-        {/* Request Assistance Card - Remove Emergency Alert button */}
         <div className="dashboard-card emergency-card">
           <div className="card-header">
             <span className="card-icon" role="img" aria-label="Help">🆘</span>
@@ -211,7 +209,6 @@ const UserDashboard = ({ userData, onLogout }) => {
               <span className="emergency-icon" role="img" aria-hidden="true">🆘</span>
               <span>I Need Help</span>
             </Link>
-            {/* Remove the Service/Emergency Alert button */}
           </div>
         </div>
 

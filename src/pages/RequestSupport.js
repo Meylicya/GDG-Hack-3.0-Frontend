@@ -1,4 +1,3 @@
-// pages/RequestSupport.js
 import React, { useState } from 'react';
 import './RequestSupport.css';
 
@@ -15,8 +14,7 @@ const RequestSupport = () => {
   ];
 
   const handleEmergency = () => {
-    alert('Calling caregiver...\nEmergency contact: Sarah - (555) 123-4567');
-    // In a real app, this would initiate a call
+    alert('Calling caregiver...\nEmergency contact: Sarah B. - +213 555 555');
   };
 
   const handleNonEmergency = () => {
@@ -43,7 +41,6 @@ const RequestSupport = () => {
     <div className="request-support-container">
       <header className="request-header">
         <h1 className="request-title">Request Support</h1>
-        <p className="request-subtitle">Help is always available when you need it</p>
       </header>
 
       {!showCategories ? (

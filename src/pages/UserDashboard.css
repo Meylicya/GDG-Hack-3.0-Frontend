@@ -1,4 +1,3 @@
-/* UserDashboard.css */
 .dashboard-container {
   padding: 20px;
   max-width: 1200px;
@@ -91,18 +90,33 @@
 .card-header {
   display: flex;
   align-items: center;
-  gap: 16px;
   margin-bottom: 16px;
 }
 
 .card-icon {
   font-size: 32px;
+  margin-right: 16px;
+  flex-shrink: 0;
 }
 
 .card-title {
   font-size: 1.5em;
   font-weight: 700;
   color: var(--dark-gray);
+  flex-grow: 1;
+}
+
+.badge {
+  background: var(--primary-red);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .card-subtitle {
@@ -121,7 +135,6 @@
 .task-item {
   display: flex;
   align-items: center;
-  gap: 12px;
   padding: 12px 0;
   border-bottom: 1px solid var(--light-gray);
 }
@@ -135,6 +148,8 @@
   align-items: center;
   justify-content: center;
   background: transparent;
+  margin-right: 12px;
+  flex-shrink: 0;
 }
 
 .task-checkbox.completed {
@@ -145,6 +160,7 @@
 
 .task-title {
   font-size: 1.1em;
+  flex-grow: 1;
 }
 
 .card-button {
@@ -159,6 +175,8 @@
   font-size: 1.1em;
   font-weight: 600;
   margin-top: auto;
+  border: none;
+  cursor: pointer;
 }
 
 .message-item {
@@ -177,13 +195,24 @@
 .appointment-item {
   display: flex;
   align-items: center;
-  gap: 12px;
   padding: 12px 0;
   border-bottom: 1px solid var(--light-gray);
 }
 
 .appointment-icon {
   font-size: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.appointment-time {
+  font-weight: 600;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.appointment-title {
+  flex-grow: 1;
 }
 
 .emergency-card {
@@ -198,41 +227,33 @@
   margin-top: auto;
 }
 
-.emergency-button,
-.service-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
-  border-radius: 16px;
-  font-size: 1.2em;
-  font-weight: 700;
-}
-
 .emergency-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
   padding: 24px;
   background: var(--primary-red);
   color: white;
-  border-radius: 12px; /* Changed from 16px to 12px for more square corners */
+  border-radius: 12px;
   font-size: 1.3em;
   font-weight: 700;
-  text-decoration: none; /* Remove underline */
+  text-decoration: none;
   transition: all 0.3s ease;
   text-align: center;
   min-height: 80px;
   border: 2px solid transparent;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-  position: relative;
-  overflow: hidden;
+  width: 100%;
 }
 
 .emergency-button span {
-  text-decoration: none ;
+  text-decoration: none;
+}
+
+.emergency-icon {
+  font-size: 1.4em;
+  margin-right: 12px;
+  animation: pulse-emergency 2s infinite;
 }
 
 .health-card {
@@ -262,6 +283,8 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition);
+  border: none;
+  cursor: pointer;
 }
 
 .mood-option.selected {
@@ -270,7 +293,6 @@
   transform: scale(1.1);
 }
 
-/* Add to UserDashboard.css - Loading screen fix */
 .dashboard-loading {
   display: flex !important;
   flex-direction: column;
@@ -304,37 +326,8 @@
   color: var(--dark-gray);
 }
 
-/* Remove Service/Emergency Alert button styles */
 .service-button {
   display: none !important;
-}
-
-/* Update emergency buttons to take full width */
-.emergency-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: auto;
-}
-
-.emergency-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 24px;
-  background: var(--primary-red);
-  color: white;
-  border-radius: 12px;
-  font-size: 1.3em;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  text-align: center;
-  min-height: 80px;
-  border: 2px solid transparent;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-  width: 100%;
 }
 
 .emergency-button:hover {
@@ -342,11 +335,6 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
   text-decoration: none;
-}
-
-.emergency-icon {
-  font-size: 1.4em;
-  animation: pulse-emergency 2s infinite;
 }
 
 @keyframes pulse-emergency {

@@ -541,7 +541,7 @@ const OnboardingPage = ({ onSelectUserType }) => {
                     onClick={() => handleDemoAccess('user')}
                     disabled={isLoading}
                   >
-                    <span role="img" aria-hidden="true">🎮</span>
+                    <span role="img" aria-hidden="true"></span>
                     {isLoading ? 'Loading...' : 'Try as User'}
                   </button>
                   <button 
@@ -549,7 +549,7 @@ const OnboardingPage = ({ onSelectUserType }) => {
                     onClick={() => handleDemoAccess('caregiver')}
                     disabled={isLoading}
                   >
-                    <span role="img" aria-hidden="true">🎮</span>
+                    <span role="img" aria-hidden="true"></span>
                     {isLoading ? 'Loading...' : 'Try as Caregiver'}
                   </button>
                 </div>
@@ -559,7 +559,7 @@ const OnboardingPage = ({ onSelectUserType }) => {
         </div>
       </div>
 
-      <div className="features-section">
+      {/*<div className="features-section">
         <h2 className="section-title">Designed for Accessibility</h2>
         <div className="features-list">
           <div className="feature-item">
@@ -579,7 +579,7 @@ const OnboardingPage = ({ onSelectUserType }) => {
             <span>Simple, clear interface</span>
           </div>
         </div>
-      </div>
+      </div>*/}
     </div>
   );
 };

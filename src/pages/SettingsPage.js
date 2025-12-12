@@ -1,4 +1,3 @@
-// pages/SettingsPage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './SettingsPage.css';
@@ -143,21 +142,21 @@ const SettingsPage = ({
           
           <div className="contact-list">
             <div className="contact-item">
-              <span className="contact-name">Sarah Johnson</span>
+              <span className="contact-name">Sarah B.</span>
               <span className="contact-relationship">Primary Caregiver</span>
-              <a href="tel:+15551234567" className="contact-phone">(555) 123-4567</a>
+              <a href="tel:+15551234567" className="contact-phone">+213 555 555</a>
             </div>
             
             <div className="contact-item">
-              <span className="contact-name">Dr. Michael Chen</span>
+              <span className="contact-name">Dr. Mohamed</span>
               <span className="contact-relationship">Primary Doctor</span>
-              <a href="tel:+15559876543" className="contact-phone">(555) 987-6543</a>
+              <a href="tel:+15559876543" className="contact-phone">+213 555 555</a>
             </div>
             
             <div className="contact-item">
               <span className="contact-name">Emergency</span>
               <span className="contact-relationship">24/7 Emergency</span>
-              <a href="tel:911" className="contact-phone emergency">911</a>
+              <a href="tel:911" className="contact-phone emergency">1548</a>
             </div>
           </div>
 

@@ -1,25 +1,24 @@
-// pages/CaregiverDashboard.js - Reorganized and Improved
 import React, { useState, useEffect } from 'react';
 import './CaregiverDashboard.css';
 
 const CaregiverDashboard = ({ userData, onLogout }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, messages, patients
+  const [activeTab, setActiveTab] = useState('overview'); 
   const [newMessage, setNewMessage] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [patients, setPatients] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Current patient (Sam) - main patient being cared for
+  // main patient
   const currentPatient = {
     id: 0,
-    name: 'Sam Wilson',
+    name: 'Samir A.',
     age: 72,
     status: 'current',
     mood: '🙂',
     lastActivity: '10 min ago',
     tasksCompleted: '2/6',
     location: 'Home',
-    contact: '(555) 123-4567',
+    contact: '+213 555 555',
     needs: 'Daily medication management, mobility assistance, and companionship. Recovering from minor surgery.',
     budget: 'Already contracted',
     nextAppointment: 'Today, 2:00 PM - Physical Therapy',
@@ -28,11 +27,11 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
     medications: ['Lisinopril 10mg', 'Metformin 500mg', 'Vitamin D 1000IU']
   };
 
-  // Sample patient requests (others seeking care)
+  //other patients requests
   const sampleRequests = [
     {
       id: 1,
-      name: 'Robert Johnson',
+      name: 'Ahmed R.',
       age: 78,
       location: '2 miles away',
       status: 'pending',
@@ -40,11 +39,11 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
       budget: '$25/hour',
       duration: '3 hours daily',
       requestedServices: ['Medication', 'Housekeeping'],
-      contact: '(555) 123-4567'
+      contact: '+213 555 555'
     },
     {
       id: 2,
-      name: 'Margaret Williams',
+      name: 'Meriem B.',
       age: 82,
       location: '5 miles away',
       status: 'pending',
@@ -52,11 +51,11 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
       budget: '$30/hour',
       duration: '4 hours, 3x/week',
       requestedServices: ['Physical Therapy', 'Meal Prep'],
-      contact: '(555) 234-5678'
+      contact: '+213 555 555'
     },
     {
       id: 3,
-      name: 'Thomas Davis',
+      name: 'Kamal D.',
       age: 70,
       location: '4 miles away',
       status: 'pending',
@@ -64,20 +63,19 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
       budget: '$28/hour',
       duration: '2 hours daily',
       requestedServices: ['Rehabilitation', 'Speech Therapy'],
-      contact: '(555) 567-8901'
+      contact: '+213 555 555'
     }
   ];
 
   // Messages with Sam
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'You', text: 'Good morning Sam! Did you take your morning medication?', time: '9:30 AM' },
-    { id: 2, sender: 'Sam Wilson', text: 'Yes, I took it at 8 AM with breakfast.', time: '9:35 AM' },
+    { id: 1, sender: 'You', text: 'Good morning Samir! Did you take your morning medication?', time: '9:30 AM' },
+    { id: 2, sender: 'Samir A.', text: 'Yes, I took it at 8 AM with breakfast.', time: '9:35 AM' },
     { id: 3, sender: 'You', text: 'Great! How are you feeling today?', time: '9:40 AM' },
-    { id: 4, sender: 'Sam Wilson', text: 'Feeling good. Ready for my walk later.', time: '9:42 AM' },
     { id: 5, sender: 'You', text: 'Remember we have physical therapy at 2 PM today.', time: '10:15 AM' },
   ]);
 
-  // Appointment logs for Sam
+  // Appointment logs for Samir
   const appointmentLogs = [
     { id: 1, type: 'Doctor', date: 'Jan 12', time: '2:00 PM', notes: 'Regular checkup - Blood pressure normal', status: 'completed' },
     { id: 2, type: 'Nurse', date: 'Jan 11', time: '10:00 AM', notes: 'Medication review - All good', status: 'completed' },
@@ -86,7 +84,6 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
     { id: 5, type: 'Lab', date: 'Jan 18', time: '9:00 AM', notes: 'Blood tests', status: 'scheduled' }
   ];
 
-  // Upcoming tasks for Sam
   const upcomingTasks = [
     { id: 1, task: 'Morning medication', time: '8:00 AM', completed: true },
     { id: 2, task: 'Blood pressure check', time: '9:00 AM', completed: true },
@@ -97,7 +94,6 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
   ];
 
   useEffect(() => {
-    // Simulate loading
     setTimeout(() => {
       setPatients(sampleRequests);
       setIsLoading(false);
@@ -115,7 +111,6 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
       setMessages([...messages, message]);
       setNewMessage('');
       
-      // Simulate Sam's reply after 2 seconds
       setTimeout(() => {
         const replies = [
           "Thanks for checking in!",
@@ -126,7 +121,7 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
         ];
         const reply = {
           id: messages.length + 2,
-          sender: 'Sam Wilson',
+          sender: 'Samir A.',
           text: replies[Math.floor(Math.random() * replies.length)],
           time: 'Just now'
         };
@@ -169,12 +164,12 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
       {/* Header */}
       <header className="caregiver-header">
         <button onClick={onLogout} className="logout-button">
-          🚪 Logout
+          Logout
         </button>
         <div className="header-content">
           <h1 className="caregiver-title">Caregiver Dashboard</h1>
           <div className="caregiver-info">
-            <span className="caregiver-name">Welcome, {userData?.name || 'Sarah'}</span>
+            <span className="caregiver-name">Welcome, {userData?.name || 'Sarah B.'}</span>
             <span className="caregiver-status">👩‍⚕️ Certified Caregiver</span>
           </div>
         </div>
@@ -397,7 +392,7 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
           <div className="messages-section">
             <h2 className="section-title">
               <span className="title-icon">💬</span>
-              Messages with Sam Wilson
+              Messages with Samir A.
             </h2>
             
             <div className="messages-container">

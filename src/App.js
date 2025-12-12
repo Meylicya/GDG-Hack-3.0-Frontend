@@ -1,4 +1,3 @@
-// App.js - Updated with authentication check
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import OnboardingPage from './pages/OnboardingPage';
@@ -11,7 +10,7 @@ import AccessibilityToolbar from './components/AccessibilityToolbar';
 import MessagesPage from './pages/MessagesPage';
 import './App.css';
 
-// API utility functions
+// API
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const fetchWithAuth = async (url, options = {}) => {
@@ -52,7 +51,6 @@ function App() {
   const [language, setLanguage] = useState('en');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check authentication on app load
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
@@ -61,14 +59,14 @@ function App() {
 
       if (token && savedUserType && savedUser) {
         try {
-          // Verify token with backend
+         
           const response = await fetchWithAuth('/auth/verify');
           
           if (response && response.ok) {
             setUserType(savedUserType);
             setUserData(JSON.parse(savedUser));
           } else {
-            // Clear invalid auth data
+            
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('userType');

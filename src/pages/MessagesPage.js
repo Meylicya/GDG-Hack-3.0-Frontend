@@ -14,20 +14,20 @@ const MessagesPage = ({ userData }) => {
 
   // Demo contacts
   const contacts = [
-    { id: 1, name: 'Sarah Johnson', role: 'Caregiver', avatar: '👩‍⚕️', unread: 3 },
-    { id: 2, name: 'Dr. Michael Chen', role: 'Doctor', avatar: '👨‍⚕️', unread: 1 },
+    { id: 1, name: 'Sarah B.', role: 'Caregiver', avatar: '👩‍⚕️', unread: 3 },
+    { id: 2, name: 'Dr. Mohamed', role: 'Doctor', avatar: '👨‍⚕️', unread: 1 },
     { id: 3, name: 'Family Group', role: 'Family', avatar: '👨‍👩‍👧‍👦', unread: 0 },
     { id: 4, name: 'Transport Service', role: 'Service', avatar: '🚗', unread: 0 },
     { id: 5, name: 'Pharmacy', role: 'Health', avatar: '💊', unread: 0 },
   ];
 
-  // Demo messages
+ 
   const demoMessages = [
     {
       id: 1,
       contactId: 1,
-      sender: 'Sarah Johnson',
-      text: 'Good morning Sam! Did you take your morning medication?',
+      sender: 'Sarah B.',
+      text: 'Good morning Samir! Did you take your morning medication?',
       time: '9:30 AM',
       isSent: false,
       read: true
@@ -44,7 +44,7 @@ const MessagesPage = ({ userData }) => {
     {
       id: 3,
       contactId: 1,
-      sender: 'Sarah Johnson',
+      sender: 'Sarah B.',
       text: 'Great! How are you feeling today?',
       time: '9:40 AM',
       isSent: false,
@@ -53,7 +53,7 @@ const MessagesPage = ({ userData }) => {
     {
       id: 4,
       contactId: 1,
-      sender: 'Sarah Johnson',
+      sender: 'Sarah B.',
       text: 'Remember we have the nurse visit at 2 PM today.',
       time: '10:15 AM',
       isSent: false,
@@ -62,7 +62,7 @@ const MessagesPage = ({ userData }) => {
     {
       id: 5,
       contactId: 2,
-      sender: 'Dr. Michael Chen',
+      sender: 'Dr. Mohamed',
       text: 'Your blood test results are in. Everything looks good!',
       time: 'Yesterday, 3:45 PM',
       isSent: false,
@@ -80,12 +80,10 @@ const MessagesPage = ({ userData }) => {
   ];
 
   useEffect(() => {
-    // Simulate loading
     setTimeout(() => {
       setMessages(demoMessages);
       setIsLoading(false);
       
-      // Select first contact by default
       if (contacts.length > 0) {
         setSelectedContact(contacts[0]);
       }
@@ -135,8 +133,7 @@ const MessagesPage = ({ userData }) => {
 
     setMessages([...messages, newMsg]);
     setNewMessage('');
-    
-    // Simulate reply after 2 seconds
+   
     setTimeout(() => {
       const replies = [
         'Thanks for letting me know!',
@@ -158,10 +155,8 @@ const MessagesPage = ({ userData }) => {
       
       setMessages(prev => [...prev, reply]);
       
-      // Provide haptic feedback
       if (navigator.vibrate) navigator.vibrate(100);
-      
-      // Announce new message in voice mode
+
       if (voiceMode) {
         speakText(`New message from ${selectedContact.name}`);
       }
@@ -200,19 +195,18 @@ const MessagesPage = ({ userData }) => {
   const handleContactSelect = (contact) => {
     setSelectedContact(contact);
     
-    // Mark messages as read
+    // Mark as read
     setMessages(messages.map(msg => 
       msg.contactId === contact.id && !msg.isSent 
         ? { ...msg, read: true } 
         : msg
     ));
     
-    // Announce in voice mode
     if (voiceMode) {
       speakText(`Now chatting with ${contact.name}, ${contact.role}`);
     }
     
-    // Provide haptic feedback
+
     if (navigator.vibrate) navigator.vibrate(30);
   };
 
@@ -223,7 +217,7 @@ const MessagesPage = ({ userData }) => {
   const handleEmergencyCall = () => {
     if (selectedContact) {
       speakText(`Calling ${selectedContact.name}...`);
-      alert(`Calling ${selectedContact.name}...\nPhone: (555) 123-4567`);
+      alert(`Calling ${selectedContact.name}...\nPhone: +213 555 555`);
     } else {
       alert('Please select a contact to call.');
     }
@@ -335,7 +329,7 @@ const MessagesPage = ({ userData }) => {
                     onClick={() => alert('Video call feature')}
                     aria-label={`Video call with ${selectedContact.name}`}
                   >
-                    📹 Video
+                    📹 Video Call
                   </button>
                 </div>
               </div>
