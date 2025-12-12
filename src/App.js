@@ -112,7 +112,7 @@ function App() {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
-        <p>Loading AssistMe...</p>
+        <p>Loading Companio...</p>
       </div>
     );
   }

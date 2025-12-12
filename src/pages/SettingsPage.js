@@ -37,7 +37,7 @@ const SettingsPage = ({
           ← Back to Dashboard
         </Link>
         <h1 className="settings-title">Settings</h1>
-        <p className="settings-subtitle">Customize your AssistMe experience</p>
+        <p className="settings-subtitle">Customize your Companio experience</p>
       </header>
 
       <div className="settings-grid">

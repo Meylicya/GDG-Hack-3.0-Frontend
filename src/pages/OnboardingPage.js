@@ -301,15 +301,15 @@ const OnboardingPage = ({ onSelectUserType }) => {
   return (
     <div className="onboarding-container">
       <header className="onboarding-header">
-        <div className="logo" role="img" aria-label="AssistMe Logo">
-          ❤️
+        <div className="logo" role="img" aria-label="Companio Logo">
+          <img src="/companio.png" alt="Logo" />
         </div>
-        <h1 className="main-title">Welcome to AssistMe</h1>
+        <h1 className="main-title">Welcome to Companio</h1>
         <p className="subtitle">Your Daily Support Companion for Seniors</p>
       </header>
 
       <div className="introduction-section">
-        <h2 className="section-title">How AssistMe Helps You</h2>
+        <h2 className="section-title">How Companio Helps You</h2>
         <div className="services-grid">
           <div className="service-card">
             <span className="service-icon" role="img" aria-hidden="true">📋</span>
