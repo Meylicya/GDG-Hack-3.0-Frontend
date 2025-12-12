@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import OnboardingPage from './pages/OnboardingPage';
 import UserDashboard from './pages/UserDashboard';
 import TaskListPage from './pages/TaskListPage';
@@ -10,12 +10,11 @@ import AccessibilityToolbar from './components/AccessibilityToolbar';
 import MessagesPage from './pages/MessagesPage';
 import './App.css';
 
-// API
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const fetchWithAuth = async (url, options = {}) => {
   const token = localStorage.getItem('token');
-  
+
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers,
@@ -31,7 +30,6 @@ const fetchWithAuth = async (url, options = {}) => {
   });
 
   if (response.status === 401) {
-    // Token expired or invalid
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('userType');
@@ -43,6 +41,8 @@ const fetchWithAuth = async (url, options = {}) => {
 };
 
 function App() {
+  const navigate = useNavigate();
+
   const [userType, setUserType] = useState(null);
   const [userData, setUserData] = useState(null);
   const [fontSize, setFontSize] = useState('medium');
@@ -59,9 +59,8 @@ function App() {
 
       if (token && savedUserType && savedUser) {
         try {
-         
           const response = await fetchWithAuth('/auth/verify');
-          
+
           if (response && response.ok) {
             setUserType(savedUserType);
             setUserData(JSON.parse(savedUser));
@@ -72,7 +71,6 @@ function App() {
             localStorage.removeItem('userType');
           }
         } catch (error) {
-          console.error('Auth check failed:', error);
           localStorage.clear();
         }
       }
@@ -88,16 +86,13 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await fetchWithAuth('/auth/logout', {
-        method: 'POST'
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
+      await fetchWithAuth('/auth/logout', { method: 'POST' });
+    } catch {}
+    finally {
       localStorage.clear();
       setUserType(null);
       setUserData(null);
-      window.location.href = '/';
+      navigate('/');
     }
   };
 
@@ -124,44 +119,74 @@ function App() {
 
   return (
     <div className={`App ${highContrast ? 'high-contrast' : ''} font-size-${fontSize}`}>
-      <Router>
-        <AccessibilityToolbar {...accessibilitySettings} />
-        <Routes>
-          <Route path="/" element={
-            userType ? 
-              <Navigate to={userType === 'user' ? '/dashboard' : '/caregiver'} /> : 
-              <OnboardingPage onSelectUserType={handleUserTypeSelect} />
-          } />
-          <Route path="/dashboard" element={
-            userType === 'user' ? 
-              <UserDashboard userData={userData} onLogout={handleLogout} fetchWithAuth={fetchWithAuth} /> : 
-              <Navigate to="/" />
-          } />
-          <Route path="/tasks" element={
-            userType === 'user' ? 
-              <TaskListPage userData={userData} fetchWithAuth={fetchWithAuth} /> : 
-              <Navigate to="/" />
-          } />
-          <Route path="/caregiver" element={
-            userType === 'caregiver' ? 
-              <CaregiverDashboard userData={userData} onLogout={handleLogout} fetchWithAuth={fetchWithAuth} /> : 
-              <Navigate to="/" />
-          } />
-          <Route path="/request-support" element={
-            userType === 'user' ? 
-              <RequestSupport userData={userData} fetchWithAuth={fetchWithAuth} /> : 
-              <Navigate to="/" />
-          } />
-          <Route path="/settings" element={
-            <SettingsPage {...accessibilitySettings} userData={userData} fetchWithAuth={fetchWithAuth} />
-          } />
-           <Route path="/messages" element={
-            userType === 'user' ? 
-              <MessagesPage userData={userData} /> : 
-              <Navigate to="/" />
-          } />
-        </Routes>
-      </Router>
+      <AccessibilityToolbar {...accessibilitySettings} />
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            userType
+              ? <Navigate to={userType === 'user' ? '/dashboard' : '/caregiver'} />
+              : <OnboardingPage onSelectUserType={handleUserTypeSelect} />
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            userType === 'user'
+              ? <UserDashboard userData={userData} onLogout={handleLogout} fetchWithAuth={fetchWithAuth} />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/tasks"
+          element={
+            userType === 'user'
+              ? <TaskListPage userData={userData} fetchWithAuth={fetchWithAuth} />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/caregiver"
+          element={
+            userType === 'caregiver'
+              ? <CaregiverDashboard userData={userData} onLogout={handleLogout} fetchWithAuth={fetchWithAuth} />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/request-support"
+          element={
+            userType === 'user'
+              ? <RequestSupport userData={userData} fetchWithAuth={fetchWithAuth} />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <SettingsPage
+              {...accessibilitySettings}
+              userData={userData}
+              fetchWithAuth={fetchWithAuth}
+            />
+          }
+        />
+
+        <Route
+          path="/messages"
+          element={
+            userType === 'user'
+              ? <MessagesPage userData={userData} />
+              : <Navigate to="/" />
+          }
+        />
+      </Routes>
     </div>
   );
 }
