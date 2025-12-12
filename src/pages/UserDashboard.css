@@ -1,0 +1,361 @@
+/* UserDashboard.css */
+.dashboard-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+}
+
+.greeting {
+  font-size: 2.5em;
+  color: var(--dark-gray);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.date-subtext {
+  font-size: 1.2em;
+  color: var(--medium-gray);
+}
+
+.progress-section {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: var(--box-shadow);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.progress-label {
+  font-size: 1.3em;
+  font-weight: 600;
+  color: var(--dark-gray);
+}
+
+.progress-count {
+  font-size: 1.2em;
+  color: var(--primary-green);
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 20px;
+  background: var(--light-gray);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-green), #34D399);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .emergency-card,
+  .health-card {
+    grid-column: span 2;
+  }
+}
+
+.dashboard-card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 28px;
+  box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card-icon {
+  font-size: 32px;
+}
+
+.card-title {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--dark-gray);
+}
+
+.card-subtitle {
+  font-size: 1.1em;
+  color: var(--medium-gray);
+  margin-bottom: 20px;
+}
+
+.task-preview,
+.messages-preview,
+.appointments-list {
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.task-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--medium-gray);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.task-checkbox.completed {
+  background: var(--primary-green);
+  border-color: var(--primary-green);
+  color: white;
+}
+
+.task-title {
+  font-size: 1.1em;
+}
+
+.card-button {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--primary-blue);
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+.message-item {
+  padding: 16px;
+  background: var(--light-blue);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.message-sender {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.appointment-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.appointment-icon {
+  font-size: 20px;
+}
+
+.emergency-card {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border: 2px solid #FECACA;
+}
+
+.emergency-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: auto;
+}
+
+.emergency-button,
+.service-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 16px;
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.emergency-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--primary-red);
+  color: white;
+  border-radius: 12px; /* Changed from 16px to 12px for more square corners */
+  font-size: 1.3em;
+  font-weight: 700;
+  text-decoration: none; /* Remove underline */
+  transition: all 0.3s ease;
+  text-align: center;
+  min-height: 80px;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.emergency-button span {
+  text-decoration: none ;
+}
+
+.health-card {
+  text-align: center;
+}
+
+.card-question {
+  font-size: 1.3em;
+  margin: 20px 0;
+}
+
+.mood-selector {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: auto;
+}
+
+.mood-option {
+  width: 80px;
+  height: 80px;
+  font-size: 40px;
+  background: transparent;
+  border: 3px solid var(--light-gray);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.mood-option.selected {
+  border-color: var(--primary-green);
+  background: var(--light-blue);
+  transform: scale(1.1);
+}
+
+/* Add to UserDashboard.css - Loading screen fix */
+.dashboard-loading {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  background: var(--off-white);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.dashboard-loading .loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--light-gray);
+  border-top-color: var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.dashboard-loading p {
+  font-size: 1.2em;
+  color: var(--dark-gray);
+}
+
+/* Remove Service/Emergency Alert button styles */
+.service-button {
+  display: none !important;
+}
+
+/* Update emergency buttons to take full width */
+.emergency-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: auto;
+}
+
+.emergency-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--primary-red);
+  color: white;
+  border-radius: 12px;
+  font-size: 1.3em;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-height: 80px;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  width: 100%;
+}
+
+.emergency-button:hover {
+  background: #B91C1C;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+  text-decoration: none;
+}
+
+.emergency-icon {
+  font-size: 1.4em;
+  animation: pulse-emergency 2s infinite;
+}
+
+@keyframes pulse-emergency {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.2); 
+    opacity: 0.8;
+  }
+}

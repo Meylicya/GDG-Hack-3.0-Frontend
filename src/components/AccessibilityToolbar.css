@@ -1,0 +1,69 @@
+/* AccessibilityToolbar.css */
+.accessibility-toolbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  padding: 12px 24px;
+}
+
+.toolbar-content {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.toolbar-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--light-blue);
+  color: var(--primary-blue);
+  font-size: 1.2em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.toolbar-button:hover {
+  background: var(--primary-blue);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.toolbar-button.active {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.language-select {
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 2px solid var(--light-blue);
+  background: white;
+  font-size: 1em;
+  min-width: 120px;
+}
+
+.language-select:focus {
+  border-color: var(--primary-blue);
+  outline: none;
+}
+
+.page-container {
+  padding-bottom: 100px !important; /* Space for toolbar */
+  min-height: 100vh;
+}
+
+.App {
+  padding-bottom: 80px; /* Add space at bottom for toolbar */
+  position: relative;
+  min-height: 100vh;
+}
