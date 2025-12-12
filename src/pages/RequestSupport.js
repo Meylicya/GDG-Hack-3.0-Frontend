@@ -1,22 +1,51 @@
 // pages/RequestSupport.js
-import React, { useState } from 'react';
-import './RequestSupport.css';
+import React, { useState } from "react";
+import API_ENDPOINTS from "../config/api";
+import { fetchWithAuth } from "../App";
+import "./RequestSupport.css";
 
 const RequestSupport = () => {
   const [showCategories, setShowCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [step, setStep] = useState(1);
+  const [description, setDescription] = useState("");
+  const [urgency, setUrgency] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const patientId = localStorage.getItem("userId");
 
   const categories = [
-    { id: 'health', name: 'Health', icon: '🏥', description: 'Medical assistance, nurse visits, medication help' },
-    { id: 'transport', name: 'Transport', icon: '🚗', description: 'Transportation services, ride to appointments' },
-    { id: 'groceries', name: 'Groceries', icon: '🛒', description: 'Grocery delivery, shopping assistance' },
-    { id: 'home-care', name: 'Home Care', icon: '🧹', description: 'Cleaning, maintenance, home help' },
+    {
+      id: "health",
+      name: "Health",
+      icon: "🏥",
+      description: "Medical assistance, nurse visits, medication help",
+    },
+    {
+      id: "transport",
+      name: "Transport",
+      icon: "🚗",
+      description: "Transportation services, ride to appointments",
+    },
+    {
+      id: "groceries",
+      name: "Groceries",
+      icon: "🛒",
+      description: "Grocery delivery, shopping assistance",
+    },
+    {
+      id: "home-care",
+      name: "Home Care",
+      icon: "🧹",
+      description: "Cleaning, maintenance, home help",
+    },
   ];
 
   const handleEmergency = () => {
-    alert('Calling caregiver...\nEmergency contact: Sarah - (555) 123-4567');
-    // In a real app, this would initiate a call
+    alert(
+      "Calling caregiver...\nEmergency contact: Your assigned caregiver will be notified immediately"
+    );
+    // In a real app, this would initiate a call via Twilio or similar
   };
 
   const handleNonEmergency = () => {
@@ -28,14 +57,58 @@ const RequestSupport = () => {
     setStep(2);
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step < 3) {
       setStep(step + 1);
     } else {
-      alert(`Request submitted successfully!\n\n${selectedCategory.name} assistance will be arranged within 2 hours.`);
-      setShowCategories(false);
-      setSelectedCategory(null);
-      setStep(1);
+      // Submit service request to backend
+      if (!description.trim()) {
+        setError("Please describe what you need");
+        return;
+      }
+
+      setIsSubmitting(true);
+      setError("");
+
+      try {
+        const response = await fetchWithAuth(
+          API_ENDPOINTS.SERVICE_REQUESTS_CREATE,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              patientId: patientId,
+              category: selectedCategory.id,
+              description: description,
+            }),
+          }
+        );
+
+        if (response && response.ok) {
+          const data = await response.json();
+          alert(
+            `Request submitted successfully!\n\n${selectedCategory.name} assistance will be arranged soon.\nRequest ID: ${data._id}`
+          );
+
+          // Reset form
+          setShowCategories(false);
+          setSelectedCategory(null);
+          setStep(1);
+          setDescription("");
+          setUrgency("");
+        } else {
+          const errorData = await response?.json();
+          setError(
+            errorData?.message || "Failed to submit request. Please try again."
+          );
+        }
+      } catch (err) {
+        console.error("Error submitting request:", err);
+        setError(
+          "Error submitting request. Please check your connection and try again."
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -43,29 +116,37 @@ const RequestSupport = () => {
     <div className="request-support-container">
       <header className="request-header">
         <h1 className="request-title">Request Support</h1>
-        <p className="request-subtitle">Help is always available when you need it</p>
+        <p className="request-subtitle">
+          Help is always available when you need it
+        </p>
       </header>
 
       {!showCategories ? (
         <div className="emergency-buttons-container">
-          <button 
+          <button
             className="emergency-button-large"
             onClick={handleEmergency}
             aria-label="Emergency Help - Call caregiver immediately"
           >
-            <span className="button-icon-large" role="img" aria-hidden="true">🔴</span>
+            <span className="button-icon-large" role="img" aria-hidden="true">
+              🔴
+            </span>
             <span className="button-text-large">Emergency Help</span>
             <span className="button-subtext">Call caregiver immediately</span>
           </button>
-          
-          <button 
+
+          <button
             className="non-emergency-button-large"
             onClick={handleNonEmergency}
             aria-label="Non-emergency request"
           >
-            <span className="button-icon-large" role="img" aria-hidden="true">🟦</span>
+            <span className="button-icon-large" role="img" aria-hidden="true">
+              🟦
+            </span>
             <span className="button-text-large">Non-emergency Request</span>
-            <span className="button-subtext">Request assistance for daily needs</span>
+            <span className="button-subtext">
+              Request assistance for daily needs
+            </span>
           </button>
         </div>
       ) : (
@@ -74,7 +155,7 @@ const RequestSupport = () => {
             <>
               <h2 className="category-title">What do you need help with?</h2>
               <div className="category-grid">
-                {categories.map(category => (
+                {categories.map((category) => (
                   <button
                     key={category.id}
                     className="category-card"
@@ -83,7 +164,9 @@ const RequestSupport = () => {
                   >
                     <span className="category-icon">{category.icon}</span>
                     <span className="category-name">{category.name}</span>
-                    <span className="category-description">{category.description}</span>
+                    <span className="category-description">
+                      {category.description}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -96,9 +179,11 @@ const RequestSupport = () => {
               <div className="wizard-content">
                 <div className="selected-category">
                   <span className="selected-icon">{selectedCategory.icon}</span>
-                  <span className="selected-name">{selectedCategory.name} Assistance</span>
+                  <span className="selected-name">
+                    {selectedCategory.name} Assistance
+                  </span>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="details" className="form-label">
                     Please describe what you need:
@@ -108,14 +193,28 @@ const RequestSupport = () => {
                     className="form-textarea"
                     rows="4"
                     placeholder="For example: Need grocery delivery for milk, eggs, and bread..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
+                  {error && (
+                    <p
+                      style={{ color: "var(--error-color)", marginTop: "10px" }}
+                    >
+                      {error}
+                    </p>
+                  )}
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="urgency" className="form-label">
                     How soon do you need help?
                   </label>
-                  <select id="urgency" className="form-select">
+                  <select
+                    id="urgency"
+                    className="form-select"
+                    value={urgency}
+                    onChange={(e) => setUrgency(e.target.value)}
+                  >
                     <option value="">Select urgency level</option>
                     <option value="today">Today</option>
                     <option value="tomorrow">Tomorrow</option>
@@ -123,18 +222,15 @@ const RequestSupport = () => {
                   </select>
                 </div>
               </div>
-              
+
               <div className="wizard-buttons">
-                <button 
+                <button
                   className="wizard-button back"
                   onClick={() => setStep(1)}
                 >
                   Back
                 </button>
-                <button 
-                  className="wizard-button next"
-                  onClick={handleNextStep}
-                >
+                <button className="wizard-button next" onClick={handleNextStep}>
                   Next
                 </button>
               </div>
@@ -147,43 +243,53 @@ const RequestSupport = () => {
               <div className="confirmation-content">
                 <div className="confirmation-card">
                   <div className="confirmation-header">
-                    <span className="confirmation-icon">{selectedCategory.icon}</span>
-                    <span className="confirmation-category">{selectedCategory.name}</span>
+                    <span className="confirmation-icon">
+                      {selectedCategory.icon}
+                    </span>
+                    <span className="confirmation-category">
+                      {selectedCategory.name}
+                    </span>
                   </div>
-                  
+
                   <div className="confirmation-details">
                     <div className="detail-item">
                       <span className="detail-label">Service:</span>
-                      <span className="detail-value">{selectedCategory.name} Assistance</span>
+                      <span className="detail-value">
+                        {selectedCategory.name} Assistance
+                      </span>
                     </div>
                     <div className="detail-item">
                       <span className="detail-label">Status:</span>
-                      <span className="detail-value pending">Pending approval</span>
+                      <span className="detail-value pending">
+                        Pending approval
+                      </span>
                     </div>
                     <div className="detail-item">
                       <span className="detail-label">Estimated time:</span>
                       <span className="detail-value">Within 2 hours</span>
                     </div>
                   </div>
-                  
+
                   <div className="confirmation-notice">
-                    Your caregiver will review this request and contact you shortly.
+                    Your caregiver will review this request and contact you
+                    shortly.
                   </div>
                 </div>
               </div>
-              
+
               <div className="wizard-buttons">
-                <button 
+                <button
                   className="wizard-button back"
                   onClick={() => setStep(2)}
                 >
                   Back
                 </button>
-                <button 
+                <button
                   className="wizard-button submit"
                   onClick={handleNextStep}
+                  disabled={isSubmitting}
                 >
-                  Submit Request
+                  > Submit Request
                 </button>
               </div>
             </div>

@@ -1,10 +1,12 @@
 // pages/CaregiverDashboard.js - Reorganized and Improved
-import React, { useState, useEffect } from 'react';
-import './CaregiverDashboard.css';
+import React, { useState, useEffect } from "react";
+import API_ENDPOINTS from "../config/api";
+import { fetchWithAuth } from "../App";
+import "./CaregiverDashboard.css";
 
 const CaregiverDashboard = ({ userData, onLogout }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, messages, patients
-  const [newMessage, setNewMessage] = useState('');
+  const [activeTab, setActiveTab] = useState("overview"); // overview, messages, patients
+  const [newMessage, setNewMessage] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [patients, setPatients] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,109 +14,259 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
   // Current patient (Sam) - main patient being cared for
   const currentPatient = {
     id: 0,
-    name: 'Sam Wilson',
+    name: "Sam Wilson",
     age: 72,
-    status: 'current',
-    mood: '🙂',
-    lastActivity: '10 min ago',
-    tasksCompleted: '2/6',
-    location: 'Home',
-    contact: '(555) 123-4567',
-    needs: 'Daily medication management, mobility assistance, and companionship. Recovering from minor surgery.',
-    budget: 'Already contracted',
-    nextAppointment: 'Today, 2:00 PM - Physical Therapy',
-    notes: 'Responds well to morning routine. Prefers tea with breakfast.',
-    healthStatus: 'Stable',
-    medications: ['Lisinopril 10mg', 'Metformin 500mg', 'Vitamin D 1000IU']
+    status: "current",
+    mood: "🙂",
+    lastActivity: "10 min ago",
+    tasksCompleted: "2/6",
+    location: "Home",
+    contact: "(555) 123-4567",
+    needs:
+      "Daily medication management, mobility assistance, and companionship. Recovering from minor surgery.",
+    budget: "Already contracted",
+    nextAppointment: "Today, 2:00 PM - Physical Therapy",
+    notes: "Responds well to morning routine. Prefers tea with breakfast.",
+    healthStatus: "Stable",
+    medications: ["Lisinopril 10mg", "Metformin 500mg", "Vitamin D 1000IU"],
   };
 
   // Sample patient requests (others seeking care)
   const sampleRequests = [
     {
       id: 1,
-      name: 'Robert Johnson',
+      name: "Robert Johnson",
       age: 78,
-      location: '2 miles away',
-      status: 'pending',
-      needs: 'Daily medication management and light housekeeping.',
-      budget: '$25/hour',
-      duration: '3 hours daily',
-      requestedServices: ['Medication', 'Housekeeping'],
-      contact: '(555) 123-4567'
+      location: "2 miles away",
+      status: "pending",
+      needs: "Daily medication management and light housekeeping.",
+      budget: "$25/hour",
+      duration: "3 hours daily",
+      requestedServices: ["Medication", "Housekeeping"],
+      contact: "(555) 123-4567",
     },
     {
       id: 2,
-      name: 'Margaret Williams',
+      name: "Margaret Williams",
       age: 82,
-      location: '5 miles away',
-      status: 'pending',
-      needs: 'Physical therapy exercises and meal preparation.',
-      budget: '$30/hour',
-      duration: '4 hours, 3x/week',
-      requestedServices: ['Physical Therapy', 'Meal Prep'],
-      contact: '(555) 234-5678'
+      location: "5 miles away",
+      status: "pending",
+      needs: "Physical therapy exercises and meal preparation.",
+      budget: "$30/hour",
+      duration: "4 hours, 3x/week",
+      requestedServices: ["Physical Therapy", "Meal Prep"],
+      contact: "(555) 234-5678",
     },
     {
       id: 3,
-      name: 'Thomas Davis',
+      name: "Thomas Davis",
       age: 70,
-      location: '4 miles away',
-      status: 'pending',
-      needs: 'Post-stroke rehabilitation and speech therapy.',
-      budget: '$28/hour',
-      duration: '2 hours daily',
-      requestedServices: ['Rehabilitation', 'Speech Therapy'],
-      contact: '(555) 567-8901'
-    }
+      location: "4 miles away",
+      status: "pending",
+      needs: "Post-stroke rehabilitation and speech therapy.",
+      budget: "$28/hour",
+      duration: "2 hours daily",
+      requestedServices: ["Rehabilitation", "Speech Therapy"],
+      contact: "(555) 567-8901",
+    },
   ];
 
   // Messages with Sam
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'You', text: 'Good morning Sam! Did you take your morning medication?', time: '9:30 AM' },
-    { id: 2, sender: 'Sam Wilson', text: 'Yes, I took it at 8 AM with breakfast.', time: '9:35 AM' },
-    { id: 3, sender: 'You', text: 'Great! How are you feeling today?', time: '9:40 AM' },
-    { id: 4, sender: 'Sam Wilson', text: 'Feeling good. Ready for my walk later.', time: '9:42 AM' },
-    { id: 5, sender: 'You', text: 'Remember we have physical therapy at 2 PM today.', time: '10:15 AM' },
+    {
+      id: 1,
+      sender: "You",
+      text: "Good morning Sam! Did you take your morning medication?",
+      time: "9:30 AM",
+    },
+    {
+      id: 2,
+      sender: "Sam Wilson",
+      text: "Yes, I took it at 8 AM with breakfast.",
+      time: "9:35 AM",
+    },
+    {
+      id: 3,
+      sender: "You",
+      text: "Great! How are you feeling today?",
+      time: "9:40 AM",
+    },
+    {
+      id: 4,
+      sender: "Sam Wilson",
+      text: "Feeling good. Ready for my walk later.",
+      time: "9:42 AM",
+    },
+    {
+      id: 5,
+      sender: "You",
+      text: "Remember we have physical therapy at 2 PM today.",
+      time: "10:15 AM",
+    },
   ]);
 
   // Appointment logs for Sam
   const appointmentLogs = [
-    { id: 1, type: 'Doctor', date: 'Jan 12', time: '2:00 PM', notes: 'Regular checkup - Blood pressure normal', status: 'completed' },
-    { id: 2, type: 'Nurse', date: 'Jan 11', time: '10:00 AM', notes: 'Medication review - All good', status: 'completed' },
-    { id: 3, type: 'Therapist', date: 'Today', time: '2:00 PM', notes: 'Physical therapy session', status: 'upcoming' },
-    { id: 4, type: 'Doctor', date: 'Jan 16', time: '11:00 AM', notes: 'Follow-up appointment', status: 'scheduled' },
-    { id: 5, type: 'Lab', date: 'Jan 18', time: '9:00 AM', notes: 'Blood tests', status: 'scheduled' }
+    {
+      id: 1,
+      type: "Doctor",
+      date: "Jan 12",
+      time: "2:00 PM",
+      notes: "Regular checkup - Blood pressure normal",
+      status: "completed",
+    },
+    {
+      id: 2,
+      type: "Nurse",
+      date: "Jan 11",
+      time: "10:00 AM",
+      notes: "Medication review - All good",
+      status: "completed",
+    },
+    {
+      id: 3,
+      type: "Therapist",
+      date: "Today",
+      time: "2:00 PM",
+      notes: "Physical therapy session",
+      status: "upcoming",
+    },
+    {
+      id: 4,
+      type: "Doctor",
+      date: "Jan 16",
+      time: "11:00 AM",
+      notes: "Follow-up appointment",
+      status: "scheduled",
+    },
+    {
+      id: 5,
+      type: "Lab",
+      date: "Jan 18",
+      time: "9:00 AM",
+      notes: "Blood tests",
+      status: "scheduled",
+    },
   ];
 
   // Upcoming tasks for Sam
   const upcomingTasks = [
-    { id: 1, task: 'Morning medication', time: '8:00 AM', completed: true },
-    { id: 2, task: 'Blood pressure check', time: '9:00 AM', completed: true },
-    { id: 3, task: '15-minute walk', time: '11:00 AM', completed: false },
-    { id: 4, task: 'Lunch medication', time: '12:30 PM', completed: false },
-    { id: 5, task: 'Physical therapy', time: '2:00 PM', completed: false },
-    { id: 6, task: 'Evening medication', time: '7:00 PM', completed: false }
+    { id: 1, task: "Morning medication", time: "8:00 AM", completed: true },
+    { id: 2, task: "Blood pressure check", time: "9:00 AM", completed: true },
+    { id: 3, task: "15-minute walk", time: "11:00 AM", completed: false },
+    { id: 4, task: "Lunch medication", time: "12:30 PM", completed: false },
+    { id: 5, task: "Physical therapy", time: "2:00 PM", completed: false },
+    { id: 6, task: "Evening medication", time: "7:00 PM", completed: false },
   ];
 
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      setPatients(sampleRequests);
-      setIsLoading(false);
-    }, 500);
-  }, []);
+    const fetchData = async () => {
+      try {
+        const caregiverId =
+          userData?._id || localStorage.getItem("caregiverId");
+
+        if (!caregiverId) {
+          // Demo mode - use sample data
+          setPatients(sampleRequests);
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch assigned patients for this caregiver
+        try {
+          const patientsRes = await fetchWithAuth(
+            API_ENDPOINTS.CAREGIVERS_PATIENTS(caregiverId)
+          );
+          if (patientsRes && patientsRes.ok) {
+            const patientsData = await patientsRes.json();
+            const formattedPatients = patientsData.map((patient) => ({
+              id: patient._id,
+              name: patient.username,
+              age: patient.age || "?",
+              location: patient.phone || "N/A",
+              status: "assigned",
+              needs: patient.medicalConditions?.join(", ") || "General care",
+              budget: "Already contracted",
+              duration: "Ongoing",
+              requestedServices: ["General Care"],
+              contact: patient.phone || "N/A",
+              patientId: patient._id,
+            }));
+            setPatients((prev) => [
+              ...formattedPatients,
+              ...prev.filter((p) => p.status !== "assigned"),
+            ]);
+          }
+        } catch (err) {
+          console.log("Could not fetch assigned patients:", err);
+        }
+
+        // Fetch pending service requests for this caregiver
+        try {
+          const requestsRes = await fetchWithAuth(
+            API_ENDPOINTS.CAREGIVERS_PENDING_REQUESTS(caregiverId)
+          );
+
+          if (requestsRes && requestsRes.ok) {
+            const requestsData = await requestsRes.json();
+            const formattedRequests = requestsData.map((req) => ({
+              id: req._id,
+              name: req.patientId?.username || "Unknown Patient",
+              age: req.patientId?.age || "?",
+              location: req.patientId?.phone || "N/A",
+              status: req.status,
+              needs: req.description,
+              budget: "Pending",
+              duration: "?",
+              requestedServices: [req.category],
+              contact: req.patientId?.phone || "N/A",
+              patientId: req.patientId?._id,
+              serviceRequestId: req._id,
+            }));
+            setPatients((prev) => [
+              ...prev.filter((p) => p.status === "assigned"),
+              ...formattedRequests,
+            ]);
+          } else {
+            // Fallback to demo data for pending requests
+            setPatients((prev) => [
+              ...prev.filter((p) => p.status === "assigned"),
+              ...sampleRequests,
+            ]);
+          }
+        } catch (err) {
+          console.log("Could not fetch requests, using demo data:", err);
+          setPatients((prev) => [
+            ...prev.filter((p) => p.status === "assigned"),
+            ...sampleRequests,
+          ]);
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error fetching caregiver data:", err);
+        setPatients(sampleRequests);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userData]);
 
   const sendMessage = () => {
     if (newMessage.trim()) {
       const message = {
         id: messages.length + 1,
-        sender: 'You',
+        sender: "You",
         text: newMessage,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       };
       setMessages([...messages, message]);
-      setNewMessage('');
-      
+      setNewMessage("");
+
       // Simulate Sam's reply after 2 seconds
       setTimeout(() => {
         const replies = [
@@ -122,38 +274,106 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
           "I'll do that right now.",
           "Feeling good today.",
           "I've taken my medication.",
-          "Ready for our session later."
+          "Ready for our session later.",
         ];
         const reply = {
           id: messages.length + 2,
-          sender: 'Sam Wilson',
+          sender: "Sam Wilson",
           text: replies[Math.floor(Math.random() * replies.length)],
-          time: 'Just now'
+          time: "Just now",
         };
-        setMessages(prev => [...prev, reply]);
+        setMessages((prev) => [...prev, reply]);
       }, 2000);
     }
   };
 
-  const handleAcceptRequest = (patientId) => {
-    setPatients(patients.map(patient => 
-      patient.id === patientId ? { ...patient, status: 'accepted' } : patient
-    ));
-    alert(`You have accepted ${patients.find(p => p.id === patientId)?.name}'s request!`);
+  const handleAcceptRequest = async (patientId) => {
+    const caregiverId = userData?._id || localStorage.getItem("caregiverId");
+    const patient = patients.find((p) => p.id === patientId);
+
+    if (!patient || !caregiverId) {
+      alert("Unable to accept request at this time");
+      return;
+    }
+
+    try {
+      // Update service request status to accepted
+      const response = await fetchWithAuth(
+        API_ENDPOINTS.SERVICE_REQUESTS_ACCEPT(
+          patient.serviceRequestId,
+          caregiverId
+        ),
+        {
+          method: "PATCH",
+        }
+      );
+
+      if (response && response.ok) {
+        setPatients(
+          patients.map((p) =>
+            p.id === patientId ? { ...p, status: "accepted" } : p
+          )
+        );
+        alert(`You have accepted ${patient.name}'s request!`);
+      } else {
+        alert("Failed to accept request. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error accepting request:", err);
+      // Fallback to optimistic update
+      setPatients(
+        patients.map((p) =>
+          p.id === patientId ? { ...p, status: "accepted" } : p
+        )
+      );
+      alert(`Request accepted! (offline mode)`);
+    }
   };
 
-  const handleDeclineRequest = (patientId) => {
-    setPatients(patients.map(patient => 
-      patient.id === patientId ? { ...patient, status: 'declined' } : patient
-    ));
-    alert(`You have declined ${patients.find(p => p.id === patientId)?.name}'s request.`);
+  const handleDeclineRequest = async (patientId) => {
+    const patient = patients.find((p) => p.id === patientId);
+
+    if (!patient) {
+      alert("Unable to decline request at this time");
+      return;
+    }
+
+    try {
+      // Update service request status to cancelled
+      const response = await fetchWithAuth(
+        API_ENDPOINTS.SERVICE_REQUESTS_CANCEL(patient.serviceRequestId),
+        {
+          method: "PATCH",
+        }
+      );
+
+      if (response && response.ok) {
+        setPatients(
+          patients.map((p) =>
+            p.id === patientId ? { ...p, status: "declined" } : p
+          )
+        );
+        alert(`You have declined ${patient.name}'s request.`);
+      } else {
+        alert("Failed to decline request. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error declining request:", err);
+      // Fallback to optimistic update
+      setPatients(
+        patients.map((p) =>
+          p.id === patientId ? { ...p, status: "declined" } : p
+        )
+      );
+      alert(`Request declined! (offline mode)`);
+    }
   };
 
   const handleContactPatient = (patient) => {
     alert(`Calling ${patient.name} at ${patient.contact}`);
   };
 
-  const pendingRequests = patients.filter(p => p.status === 'pending');
+  const pendingRequests = patients.filter((p) => p.status === "pending");
 
   if (isLoading) {
     return (
@@ -174,28 +394,30 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
         <div className="header-content">
           <h1 className="caregiver-title">Caregiver Dashboard</h1>
           <div className="caregiver-info">
-            <span className="caregiver-name">Welcome, {userData?.name || 'Sarah'}</span>
+            <span className="caregiver-name">
+              Welcome, {userData?.name || "Sarah"}
+            </span>
             <span className="caregiver-status">👩‍⚕️ Certified Caregiver</span>
           </div>
         </div>
 
         {/* Navigation Tabs */}
         <nav className="dashboard-tabs">
-          <button 
-            className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-            onClick={() => setActiveTab('overview')}
+          <button
+            className={`tab-button ${activeTab === "overview" ? "active" : ""}`}
+            onClick={() => setActiveTab("overview")}
           >
             📊 Overview
           </button>
-          <button 
-            className={`tab-button ${activeTab === 'messages' ? 'active' : ''}`}
-            onClick={() => setActiveTab('messages')}
+          <button
+            className={`tab-button ${activeTab === "messages" ? "active" : ""}`}
+            onClick={() => setActiveTab("messages")}
           >
             💬 Messages
           </button>
-          <button 
-            className={`tab-button ${activeTab === 'patients' ? 'active' : ''}`}
-            onClick={() => setActiveTab('patients')}
+          <button
+            className={`tab-button ${activeTab === "patients" ? "active" : ""}`}
+            onClick={() => setActiveTab("patients")}
           >
             👥 Patient Requests
           </button>
@@ -204,7 +426,7 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
 
       {/* Main Content */}
       <div className="dashboard-content">
-        {activeTab === 'overview' && (
+        {activeTab === "overview" && (
           <>
             {/* Current Patient Overview */}
             <div className="current-patient-section">
@@ -212,7 +434,7 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                 <span className="title-icon">👤</span>
                 Current Patient: {currentPatient.name}
               </h2>
-              
+
               <div className="patient-overview-grid">
                 {/* Patient Summary Card */}
                 <div className="overview-card patient-summary">
@@ -223,19 +445,27 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                   <div className="summary-grid">
                     <div className="summary-item">
                       <span className="summary-label">Age</span>
-                      <span className="summary-value">{currentPatient.age} years</span>
+                      <span className="summary-value">
+                        {currentPatient.age} years
+                      </span>
                     </div>
                     <div className="summary-item">
                       <span className="summary-label">Mood</span>
-                      <span className="summary-value mood">{currentPatient.mood}</span>
+                      <span className="summary-value mood">
+                        {currentPatient.mood}
+                      </span>
                     </div>
                     <div className="summary-item">
                       <span className="summary-label">Health Status</span>
-                      <span className="summary-value status-good">{currentPatient.healthStatus}</span>
+                      <span className="summary-value status-good">
+                        {currentPatient.healthStatus}
+                      </span>
                     </div>
                     <div className="summary-item">
                       <span className="summary-label">Last Activity</span>
-                      <span className="summary-value">{currentPatient.lastActivity}</span>
+                      <span className="summary-value">
+                        {currentPatient.lastActivity}
+                      </span>
                     </div>
                   </div>
                   <div className="patient-notes">
@@ -248,13 +478,20 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                 <div className="overview-card tasks-card">
                   <div className="card-header">
                     <h3>Today's Tasks</h3>
-                    <span className="task-count">{currentPatient.tasksCompleted} completed</span>
+                    <span className="task-count">
+                      {currentPatient.tasksCompleted} completed
+                    </span>
                   </div>
                   <div className="tasks-list">
-                    {upcomingTasks.map(task => (
-                      <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+                    {upcomingTasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className={`task-item ${
+                          task.completed ? "completed" : ""
+                        }`}
+                      >
                         <div className="task-checkbox">
-                          {task.completed ? '✓' : ''}
+                          {task.completed ? "✓" : ""}
                         </div>
                         <span className="task-text">{task.task}</span>
                         <span className="task-time">{task.time}</span>
@@ -288,7 +525,9 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                 <div className="overview-card appointment-card">
                   <div className="card-header">
                     <h3>Next Appointment</h3>
-                    <span className="appointment-status upcoming">Upcoming</span>
+                    <span className="appointment-status upcoming">
+                      Upcoming
+                    </span>
                   </div>
                   <div className="appointment-details">
                     <div className="appointment-icon">🏥</div>
@@ -317,13 +556,20 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                   <div className="table-cell notes">Notes</div>
                   <div className="table-cell status">Status</div>
                 </div>
-                {appointmentLogs.map(log => (
+                {appointmentLogs.map((log) => (
                   <div key={log.id} className="table-row">
                     <div className="table-cell type">
-                      <span className="log-icon">{log.type === 'Doctor' ? '👨‍⚕️' : 
-                                               log.type === 'Nurse' ? '👩‍⚕️' : 
-                                               log.type === 'Therapist' ? '🧘' : 
-                                               log.type === 'Lab' ? '🩸' : '📅'}</span>
+                      <span className="log-icon">
+                        {log.type === "Doctor"
+                          ? "👨‍⚕️"
+                          : log.type === "Nurse"
+                          ? "👩‍⚕️"
+                          : log.type === "Therapist"
+                          ? "🧘"
+                          : log.type === "Lab"
+                          ? "🩸"
+                          : "📅"}
+                      </span>
                       {log.type}
                     </div>
                     <div className="table-cell date">{log.date}</div>
@@ -346,34 +592,40 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                   <span className="title-icon">👥</span>
                   New Patient Requests
                 </h2>
-                <button 
+                <button
                   className="view-all-button"
-                  onClick={() => setActiveTab('patients')}
+                  onClick={() => setActiveTab("patients")}
                 >
                   View All ({pendingRequests.length})
                 </button>
               </div>
               {pendingRequests.length > 0 ? (
                 <div className="requests-grid">
-                  {pendingRequests.slice(0, 2).map(patient => (
+                  {pendingRequests.slice(0, 2).map((patient) => (
                     <div key={patient.id} className="request-card">
                       <div className="request-header">
-                        <div className="patient-avatar">{patient.name.charAt(0)}</div>
+                        <div className="patient-avatar">
+                          {patient.name.charAt(0)}
+                        </div>
                         <div className="patient-info">
-                          <div className="patient-name">{patient.name}, {patient.age}</div>
-                          <div className="patient-location">{patient.location}</div>
+                          <div className="patient-name">
+                            {patient.name}, {patient.age}
+                          </div>
+                          <div className="patient-location">
+                            {patient.location}
+                          </div>
                         </div>
                         <div className="request-budget">{patient.budget}</div>
                       </div>
                       <p className="request-needs">{patient.needs}</p>
                       <div className="request-actions">
-                        <button 
+                        <button
                           className="accept-btn"
                           onClick={() => handleAcceptRequest(patient.id)}
                         >
                           Accept
                         </button>
-                        <button 
+                        <button
                           className="decline-btn"
                           onClick={() => handleDeclineRequest(patient.id)}
                         >
@@ -393,19 +645,21 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
           </>
         )}
 
-        {activeTab === 'messages' && (
+        {activeTab === "messages" && (
           <div className="messages-section">
             <h2 className="section-title">
               <span className="title-icon">💬</span>
               Messages with Sam Wilson
             </h2>
-            
+
             <div className="messages-container">
               <div className="messages-list">
-                {messages.map(message => (
-                  <div 
-                    key={message.id} 
-                    className={`message ${message.sender === 'You' ? 'sent' : 'received'}`}
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`message ${
+                      message.sender === "You" ? "sent" : "received"
+                    }`}
                   >
                     <div className="message-sender">{message.sender}</div>
                     <div className="message-content">
@@ -415,7 +669,7 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="message-input-area">
                 <input
                   type="text"
@@ -423,7 +677,7 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message to Sam..."
                   className="message-input"
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                 />
                 <button className="send-button" onClick={sendMessage}>
                   Send
@@ -436,68 +690,82 @@ const CaregiverDashboard = ({ userData, onLogout }) => {
           </div>
         )}
 
-        {activeTab === 'patients' && (
+        {activeTab === "patients" && (
           <div className="patients-section">
             <h2 className="section-title">
               <span className="title-icon">👥</span>
               Patient Requests
             </h2>
-            
+
             <div className="requests-container">
               {pendingRequests.length > 0 ? (
                 <div className="requests-list">
-                  {pendingRequests.map(patient => (
+                  {pendingRequests.map((patient) => (
                     <div key={patient.id} className="detailed-request-card">
                       <div className="request-header">
-                        <div className="patient-avatar-large">{patient.name.charAt(0)}</div>
+                        <div className="patient-avatar-large">
+                          {patient.name.charAt(0)}
+                        </div>
                         <div className="patient-details">
                           <div className="patient-main-info">
-                            <h3 className="patient-name">{patient.name}, {patient.age}</h3>
-                            <div className="patient-location">{patient.location}</div>
+                            <h3 className="patient-name">
+                              {patient.name}, {patient.age}
+                            </h3>
+                            <div className="patient-location">
+                              {patient.location}
+                            </div>
                           </div>
                           <div className="patient-contact">
                             <span className="contact-label">Contact:</span>
-                            <span className="contact-number">{patient.contact}</span>
+                            <span className="contact-number">
+                              {patient.contact}
+                            </span>
                           </div>
                         </div>
                         <div className="request-budget-large">
-                          <span className="budget-amount">{patient.budget}</span>
-                          <span className="budget-duration">{patient.duration}</span>
+                          <span className="budget-amount">
+                            {patient.budget}
+                          </span>
+                          <span className="budget-duration">
+                            {patient.duration}
+                          </span>
                         </div>
                       </div>
-                      
+
                       <div className="request-details">
                         <div className="detail-section">
                           <h4>Care Needs</h4>
                           <p>{patient.needs}</p>
                         </div>
-                        
+
                         <div className="detail-section">
                           <h4>Requested Services</h4>
                           <div className="services-tags">
                             {patient.requestedServices.map((service, index) => (
-                              <span key={index} className="service-tag">{service}</span>
+                              <span key={index} className="service-tag">
+                                {service}
+                              </span>
                             ))}
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="request-actions-large">
-                        <button 
+                        <button
                           className="accept-btn-large"
                           onClick={() => handleAcceptRequest(patient.id)}
                         >
                           <span className="action-icon">✓</span>
                           Accept Request
                         </button>
-                        <button 
+                        <button
                           className="decline-btn-large"
                           onClick={() => handleDeclineRequest(patient.id)}
                         >
                           <span className="action-icon">✗</span>
                           Decline
                         </button>
-                        <button 
+                        <button
                           className="contact-btn-large"
                           onClick={() => handleContactPatient(patient)}
                         >

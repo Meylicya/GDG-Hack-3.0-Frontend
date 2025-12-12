@@ -1,18 +1,19 @@
 // pages/OnboardingPage.js - Updated with offline demo support
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './OnboardingPage.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import API_ENDPOINTS from "../config/api";
+import "./OnboardingPage.css";
 
 const OnboardingPage = ({ onSelectUserType }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [selectedUserType, setSelectedUserType] = useState(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
+  const [error, setError] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState("");
   const [formErrors, setFormErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
   const navigate = useNavigate();
@@ -20,10 +21,14 @@ const OnboardingPage = ({ onSelectUserType }) => {
   // Password strength checker
   useEffect(() => {
     if (!isLogin && password) {
-      let strength = 'weak';
-      if (password.length >= 8) strength = 'medium';
-      if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
-        strength = 'strong';
+      let strength = "weak";
+      if (password.length >= 8) strength = "medium";
+      if (
+        password.length >= 12 &&
+        /[A-Z]/.test(password) &&
+        /[0-9]/.test(password)
+      ) {
+        strength = "strong";
       }
       setPasswordStrength(strength);
     }
@@ -32,191 +37,218 @@ const OnboardingPage = ({ onSelectUserType }) => {
   // Form validation
   const validateField = (name, value) => {
     const errors = { ...formErrors };
-    
+
     switch (name) {
-      case 'email':
+      case "email":
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (value && !emailRegex.test(value)) {
-          errors.email = 'Please enter a valid email address';
+          errors.email = "Please enter a valid email address";
         } else {
           delete errors.email;
         }
         break;
-        
-      case 'password':
+
+      case "password":
         if (value && value.length < 6) {
-          errors.password = 'Password must be at least 6 characters';
+          errors.password = "Password must be at least 6 characters";
         } else {
           delete errors.password;
         }
         break;
-        
-      case 'name':
+
+      case "name":
         if (!value.trim()) {
-          errors.name = 'Name is required';
+          errors.name = "Name is required";
         } else if (value.trim().length < 2) {
-          errors.name = 'Name must be at least 2 characters';
+          errors.name = "Name must be at least 2 characters";
         } else {
           delete errors.name;
         }
         break;
     }
-    
+
     setFormErrors(errors);
   };
 
   const handleBlur = (field) => {
     setTouchedFields({ ...touchedFields, [field]: true });
-    
+
     switch (field) {
-      case 'email':
-        validateField('email', email);
+      case "email":
+        validateField("email", email);
         break;
-      case 'password':
-        validateField('password', password);
+      case "password":
+        validateField("password", password);
         break;
-      case 'name':
-        validateField('name', name);
+      case "name":
+        validateField("name", name);
         break;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate all fields
     const errors = {};
     if (!selectedUserType) {
-      errors.userType = 'Please select user type';
-      setError('Please select whether you are a User or Caregiver');
+      errors.userType = "Please select user type";
+      setError("Please select whether you are a User or Caregiver");
     }
     if (isLogin) {
-      if (!email) errors.email = 'Email is required';
-      if (!password) errors.password = 'Password is required';
+      if (!email) errors.email = "Email is required";
+      if (!password) errors.password = "Password is required";
     } else {
-      if (!name) errors.name = 'Name is required';
-      if (!email) errors.email = 'Email is required';
-      if (!password) errors.password = 'Password is required';
+      if (!name) errors.name = "Name is required";
+      if (!email) errors.email = "Email is required";
+      if (!password) errors.password = "Password is required";
     }
-    
+
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       // Set touched fields for all to show errors
-      Object.keys(errors).forEach(field => {
+      Object.keys(errors).forEach((field) => {
         touchedFields[field] = true;
       });
       return;
     }
-    
+
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      // Check if backend is available
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      
       if (isLogin) {
-        // Try real login
+        // Try real login - determine endpoint based on user type
+        const endpoint =
+          selectedUserType === "caregiver"
+            ? API_ENDPOINTS.AUTH_CAREGIVER_LOGIN
+            : API_ENDPOINTS.AUTH_LOGIN;
         try {
-          const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: 'POST',
+          const response = await fetch(endpoint, {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               email,
               password,
-              userType: selectedUserType
-            })
+            }),
           });
 
           if (response.ok) {
             const data = await response.json();
-            localStorage.setItem('token', data.token || 'demo-token');
-            localStorage.setItem('user', JSON.stringify(data.user || { name, email, type: selectedUserType }));
-            localStorage.setItem('userType', selectedUserType);
-            localStorage.setItem('isDemo', 'false');
-            
+            localStorage.setItem("token", data.token || "demo-token");
+            localStorage.setItem(
+              "user",
+              JSON.stringify(
+                data.user || { username: name, email, role: selectedUserType }
+              )
+            );
+            localStorage.setItem("userType", selectedUserType);
+            localStorage.setItem("isDemo", "false");
+
             onSelectUserType(selectedUserType);
-            navigate(selectedUserType === 'user' ? '/dashboard' : '/caregiver');
+            navigate(selectedUserType === "user" ? "/dashboard" : "/caregiver");
             return;
+          } else {
+            const errorData = await response.json();
+            setError(errorData.message || "Invalid credentials");
           }
         } catch (apiError) {
-          console.log('API not available, using demo mode');
+          console.log("API not available, using demo mode");
         }
-        
+
         // If API fails, use demo mode with entered credentials
-        localStorage.setItem('token', 'demo-token');
-        localStorage.setItem('user', JSON.stringify({ 
-          name: email.split('@')[0], 
-          email, 
-          type: selectedUserType 
-        }));
-        localStorage.setItem('userType', selectedUserType);
-        localStorage.setItem('isDemo', 'true');
-        
+        localStorage.setItem("token", "demo-token");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: email.split("@")[0],
+            email,
+            role: selectedUserType,
+          })
+        );
+        localStorage.setItem("userType", selectedUserType);
+        localStorage.setItem("isDemo", "true");
+
         onSelectUserType(selectedUserType);
-        navigate(selectedUserType === 'user' ? '/dashboard' : '/caregiver');
-        
+        navigate(selectedUserType === "user" ? "/dashboard" : "/caregiver");
       } else {
-        // Signup - Try real registration
+        // Signup - Try real registration - determine endpoint based on user type
+        const endpoint =
+          selectedUserType === "caregiver"
+            ? API_ENDPOINTS.AUTH_CAREGIVER_REGISTER
+            : API_ENDPOINTS.AUTH_REGISTER;
         try {
-          const response = await fetch(`${API_BASE_URL}/auth/register`, {
-            method: 'POST',
+          const response = await fetch(endpoint, {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              name,
+              username: name,
               email,
               password,
-              userType: selectedUserType
-            })
+            }),
           });
 
           if (response.ok) {
             const data = await response.json();
-            localStorage.setItem('token', data.token || 'demo-token');
-            localStorage.setItem('user', JSON.stringify(data.user || { name, email, type: selectedUserType }));
-            localStorage.setItem('userType', selectedUserType);
-            localStorage.setItem('isDemo', 'false');
-            
+            localStorage.setItem("token", data.token || "demo-token");
+            localStorage.setItem(
+              "user",
+              JSON.stringify(
+                data.user || { username: name, email, role: selectedUserType }
+              )
+            );
+            localStorage.setItem("userType", selectedUserType);
+            localStorage.setItem("isDemo", "false");
+
             onSelectUserType(selectedUserType);
-            navigate(selectedUserType === 'user' ? '/dashboard' : '/caregiver');
+            navigate(selectedUserType === "user" ? "/dashboard" : "/caregiver");
             return;
+          } else {
+            const errorData = await response.json();
+            setError(errorData.message || "Registration failed");
           }
         } catch (apiError) {
-          console.log('API not available, using demo mode for signup');
+          console.log("API not available, using demo mode for signup");
         }
-        
+
         // If API fails, use demo mode
-        localStorage.setItem('token', 'demo-token');
-        localStorage.setItem('user', JSON.stringify({ 
-          name, 
-          email, 
-          type: selectedUserType 
-        }));
-        localStorage.setItem('userType', selectedUserType);
-        localStorage.setItem('isDemo', 'true');
-        
+        localStorage.setItem("token", "demo-token");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: name,
+            email,
+            role: selectedUserType,
+          })
+        );
+        localStorage.setItem("userType", selectedUserType);
+        localStorage.setItem("isDemo", "true");
+
         onSelectUserType(selectedUserType);
-        navigate(selectedUserType === 'user' ? '/dashboard' : '/caregiver');
+        navigate(selectedUserType === "user" ? "/dashboard" : "/caregiver");
       }
     } catch (err) {
-      setError(err.message || 'Something went wrong. Using demo mode instead.');
+      setError(err.message || "Something went wrong. Using demo mode instead.");
       // Even on error, allow demo access
-      localStorage.setItem('token', 'demo-token');
-      localStorage.setItem('user', JSON.stringify({ 
-        name: name || 'Demo User', 
-        email: email || 'demo@example.com', 
-        type: selectedUserType 
-      }));
-      localStorage.setItem('userType', selectedUserType);
-      localStorage.setItem('isDemo', 'true');
-      
+      localStorage.setItem("token", "demo-token");
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          username: name || "Demo User",
+          email: email || "demo@example.com",
+          role: selectedUserType,
+        })
+      );
+      localStorage.setItem("userType", selectedUserType);
+      localStorage.setItem("isDemo", "true");
+
       setTimeout(() => {
         onSelectUserType(selectedUserType);
-        navigate(selectedUserType === 'user' ? '/dashboard' : '/caregiver');
+        navigate(selectedUserType === "user" ? "/dashboard" : "/caregiver");
       }, 1500);
     } finally {
       setIsLoading(false);
@@ -225,21 +257,20 @@ const OnboardingPage = ({ onSelectUserType }) => {
 
   const handleForgotPassword = async () => {
     if (!email) {
-      setError('Please enter your email address first');
+      setError("Please enter your email address first");
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
-        method: 'POST',
+      const response = await fetch(API_ENDPOINTS.PASSWORD_FORGOT, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
       });
 
       if (response.ok) {
@@ -261,40 +292,40 @@ const OnboardingPage = ({ onSelectUserType }) => {
 
   const handleDemoAccess = (type) => {
     setIsLoading(true);
-    setError('');
-    
+    setError("");
+
     // Create demo user data
     const demoUsers = {
       user: {
-        name: 'Sam Wilson',
-        email: 'sam@example.com',
-        type: 'user',
+        name: "Sam Wilson",
+        email: "sam@example.com",
+        type: "user",
         age: 72,
-        caregiver: 'Sarah Johnson'
+        caregiver: "Sarah Johnson",
       },
       caregiver: {
-        name: 'Sarah Johnson',
-        email: 'sarah@example.com',
-        type: 'caregiver',
-        patient: 'Sam Wilson'
-      }
+        name: "Sarah Johnson",
+        email: "sarah@example.com",
+        type: "caregiver",
+        patient: "Sam Wilson",
+      },
     };
-    
+
     const demoData = demoUsers[type];
-    
+
     // Store demo data
-    localStorage.setItem('token', 'demo-token-' + Date.now());
-    localStorage.setItem('user', JSON.stringify(demoData));
-    localStorage.setItem('userType', type);
-    localStorage.setItem('isDemo', 'true');
-    
+    localStorage.setItem("token", "demo-token-" + Date.now());
+    localStorage.setItem("user", JSON.stringify(demoData));
+    localStorage.setItem("userType", type);
+    localStorage.setItem("isDemo", "true");
+
     // Show success message
     setError(`Demo mode activated! Logging in as ${demoData.name}...`);
-    
+
     // Navigate after short delay
     setTimeout(() => {
       onSelectUserType(type);
-      navigate(type === 'user' ? '/dashboard' : '/caregiver');
+      navigate(type === "user" ? "/dashboard" : "/caregiver");
     }, 1000);
   };
 
@@ -312,22 +343,30 @@ const OnboardingPage = ({ onSelectUserType }) => {
         <h2 className="section-title">How AssistMe Helps You</h2>
         <div className="services-grid">
           <div className="service-card">
-            <span className="service-icon" role="img" aria-hidden="true">📋</span>
+            <span className="service-icon" role="img" aria-hidden="true">
+              📋
+            </span>
             <h3>Daily Task Management</h3>
             <p>Medication reminders, exercise routines, and daily activities</p>
           </div>
           <div className="service-card">
-            <span className="service-icon" role="img" aria-hidden="true">💬</span>
+            <span className="service-icon" role="img" aria-hidden="true">
+              💬
+            </span>
             <h3>Family Communication</h3>
             <p>Stay connected with caregivers and family members</p>
           </div>
           <div className="service-card">
-            <span className="service-icon" role="img" aria-hidden="true">🏥</span>
+            <span className="service-icon" role="img" aria-hidden="true">
+              🏥
+            </span>
             <h3>Health Tracking</h3>
             <p>Monitor health metrics and appointment schedules</p>
           </div>
           <div className="service-card">
-            <span className="service-icon" role="img" aria-hidden="true">🆘</span>
+            <span className="service-icon" role="img" aria-hidden="true">
+              🆘
+            </span>
             <h3>Emergency Support</h3>
             <p>Quick access to help when you need it most</p>
           </div>
@@ -336,23 +375,23 @@ const OnboardingPage = ({ onSelectUserType }) => {
 
       <div className="auth-container">
         <div className="auth-tabs">
-          <button 
-            className={`auth-tab ${isLogin ? 'active' : ''}`}
+          <button
+            className={`auth-tab ${isLogin ? "active" : ""}`}
             onClick={() => {
               setIsLogin(true);
               setShowForgotPassword(false);
-              setError('');
+              setError("");
             }}
             disabled={isLoading}
           >
             Login
           </button>
-          <button 
-            className={`auth-tab ${!isLogin ? 'active' : ''}`}
+          <button
+            className={`auth-tab ${!isLogin ? "active" : ""}`}
             onClick={() => {
               setIsLogin(false);
               setShowForgotPassword(false);
-              setError('');
+              setError("");
             }}
             disabled={isLoading}
           >
@@ -362,10 +401,14 @@ const OnboardingPage = ({ onSelectUserType }) => {
 
         <div className="auth-content">
           {error && (
-            <div className={`error-message ${error.includes('Demo mode') ? 'demo-message' : ''}`}>
+            <div
+              className={`error-message ${
+                error.includes("Demo mode") ? "demo-message" : ""
+              }`}
+            >
               <span role="img" aria-hidden="true">
-                {error.includes('Demo mode') ? '🎮' : '⚠️'}
-              </span> 
+                {error.includes("Demo mode") ? "🎮" : "⚠️"}
+              </span>
               {error}
             </div>
           )}
@@ -386,19 +429,19 @@ const OnboardingPage = ({ onSelectUserType }) => {
                 />
               </div>
               <div className="button-group">
-                <button 
+                <button
                   className="secondary-button"
                   onClick={() => setShowForgotPassword(false)}
                   disabled={isLoading}
                 >
                   Back to Login
                 </button>
-                <button 
+                <button
                   className="primary-button"
                   onClick={handleForgotPassword}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Sending...' : 'Send Reset Link'}
+                  {isLoading ? "Sending..." : "Send Reset Link"}
                 </button>
               </div>
             </div>
@@ -407,28 +450,43 @@ const OnboardingPage = ({ onSelectUserType }) => {
               <div className="user-type-selection">
                 <h3 className="selection-title">I am a:</h3>
                 <div className="type-options">
-                  <button 
-                    className={`type-option ${selectedUserType === 'user' ? 'selected' : ''}`}
-                    onClick={() => setSelectedUserType('user')}
+                  <button
+                    className={`type-option ${
+                      selectedUserType === "user" ? "selected" : ""
+                    }`}
+                    onClick={() => setSelectedUserType("user")}
                     disabled={isLoading}
                   >
-                    <span className="option-icon" role="img" aria-hidden="true">👤</span>
+                    <span className="option-icon" role="img" aria-hidden="true">
+                      👤
+                    </span>
                     <span className="option-text">User / Patient</span>
-                    <span className="option-description">I need daily assistance</span>
+                    <span className="option-description">
+                      I need daily assistance
+                    </span>
                   </button>
-                  
-                  <button 
-                    className={`type-option ${selectedUserType === 'caregiver' ? 'selected' : ''}`}
-                    onClick={() => setSelectedUserType('caregiver')}
+
+                  <button
+                    className={`type-option ${
+                      selectedUserType === "caregiver" ? "selected" : ""
+                    }`}
+                    onClick={() => setSelectedUserType("caregiver")}
                     disabled={isLoading}
                   >
-                    <span className="option-icon" role="img" aria-hidden="true">👨‍👩‍👧‍👦</span>
+                    <span className="option-icon" role="img" aria-hidden="true">
+                      👨‍👩‍👧‍👦
+                    </span>
                     <span className="option-text">Caregiver / Family</span>
-                    <span className="option-description">I provide care and support</span>
+                    <span className="option-description">
+                      I provide care and support
+                    </span>
                   </button>
                 </div>
                 {touchedFields.userType && formErrors.userType && (
-                  <div className="validation-message error" style={{ textAlign: 'center', marginTop: '8px' }}>
+                  <div
+                    className="validation-message error"
+                    style={{ textAlign: "center", marginTop: "8px" }}
+                  >
                     {formErrors.userType}
                   </div>
                 )}
@@ -444,19 +502,30 @@ const OnboardingPage = ({ onSelectUserType }) => {
                       value={name}
                       onChange={(e) => {
                         setName(e.target.value);
-                        if (touchedFields.name) validateField('name', e.target.value);
+                        if (touchedFields.name)
+                          validateField("name", e.target.value);
                       }}
-                      onBlur={() => handleBlur('name')}
-                      className={`auth-input ${touchedFields.name ? (formErrors.name ? 'invalid' : name ? 'valid' : '') : ''}`}
+                      onBlur={() => handleBlur("name")}
+                      className={`auth-input ${
+                        touchedFields.name
+                          ? formErrors.name
+                            ? "invalid"
+                            : name
+                            ? "valid"
+                            : ""
+                          : ""
+                      }`}
                       required={!isLogin}
                       disabled={isLoading}
                     />
                     {touchedFields.name && formErrors.name && (
-                      <div className="validation-message error">{formErrors.name}</div>
+                      <div className="validation-message error">
+                        {formErrors.name}
+                      </div>
                     )}
                   </div>
                 )}
-                
+
                 <div className="auth-input-group">
                   <span className="input-icon">✉️</span>
                   <input
@@ -465,18 +534,29 @@ const OnboardingPage = ({ onSelectUserType }) => {
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
-                      if (touchedFields.email) validateField('email', e.target.value);
+                      if (touchedFields.email)
+                        validateField("email", e.target.value);
                     }}
-                    onBlur={() => handleBlur('email')}
-                    className={`auth-input ${touchedFields.email ? (formErrors.email ? 'invalid' : email ? 'valid' : '') : ''}`}
+                    onBlur={() => handleBlur("email")}
+                    className={`auth-input ${
+                      touchedFields.email
+                        ? formErrors.email
+                          ? "invalid"
+                          : email
+                          ? "valid"
+                          : ""
+                        : ""
+                    }`}
                     required
                     disabled={isLoading}
                   />
                   {touchedFields.email && formErrors.email && (
-                    <div className="validation-message error">{formErrors.email}</div>
+                    <div className="validation-message error">
+                      {formErrors.email}
+                    </div>
                   )}
                 </div>
-                
+
                 <div className="auth-input-group">
                   <span className="input-icon">🔒</span>
                   <input
@@ -485,36 +565,55 @@ const OnboardingPage = ({ onSelectUserType }) => {
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
-                      if (touchedFields.password) validateField('password', e.target.value);
+                      if (touchedFields.password)
+                        validateField("password", e.target.value);
                     }}
-                    onBlur={() => handleBlur('password')}
-                    className={`auth-input ${touchedFields.password ? (formErrors.password ? 'invalid' : password ? 'valid' : '') : ''}`}
+                    onBlur={() => handleBlur("password")}
+                    className={`auth-input ${
+                      touchedFields.password
+                        ? formErrors.password
+                          ? "invalid"
+                          : password
+                          ? "valid"
+                          : ""
+                        : ""
+                    }`}
                     required
                     disabled={isLoading}
                   />
                   {touchedFields.password && formErrors.password && (
-                    <div className="validation-message error">{formErrors.password}</div>
+                    <div className="validation-message error">
+                      {formErrors.password}
+                    </div>
                   )}
-                  
+
                   {!isLogin && password && (
                     <div className="password-strength">
                       <div className="strength-text">
-                        Password strength: 
-                        <span className={`strength-indicator ${passwordStrength}`}>
-                          {passwordStrength === 'weak' ? ' Weak' : 
-                           passwordStrength === 'medium' ? ' Medium' : 
-                           passwordStrength === 'strong' ? ' Strong' : ''}
+                        Password strength:
+                        <span
+                          className={`strength-indicator ${passwordStrength}`}
+                        >
+                          {passwordStrength === "weak"
+                            ? " Weak"
+                            : passwordStrength === "medium"
+                            ? " Medium"
+                            : passwordStrength === "strong"
+                            ? " Strong"
+                            : ""}
                         </span>
                       </div>
                       <div className="strength-bar">
-                        <div className={`strength-fill ${passwordStrength}`}></div>
+                        <div
+                          className={`strength-fill ${passwordStrength}`}
+                        ></div>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {isLogin && (
-                  <button 
+                  <button
                     type="button"
                     className="forgot-password-link"
                     onClick={() => setShowForgotPassword(true)}
@@ -524,33 +623,41 @@ const OnboardingPage = ({ onSelectUserType }) => {
                   </button>
                 )}
 
-                <button 
-                  type="submit" 
-                  className={`submit-button ${isLoading ? 'loading' : ''}`}
+                <button
+                  type="submit"
+                  className={`submit-button ${isLoading ? "loading" : ""}`}
                   disabled={!selectedUserType || isLoading}
                 >
-                  {isLoading ? 'Please wait...' : (isLogin ? 'Login' : 'Create Account')}
+                  {isLoading
+                    ? "Please wait..."
+                    : isLogin
+                    ? "Login"
+                    : "Create Account"}
                 </button>
               </form>
 
               <div className="demo-access">
                 <p className="demo-text">Want to explore first?</p>
                 <div className="demo-buttons">
-                  <button 
+                  <button
                     className="demo-button user-demo"
-                    onClick={() => handleDemoAccess('user')}
+                    onClick={() => handleDemoAccess("user")}
                     disabled={isLoading}
                   >
-                    <span role="img" aria-hidden="true">🎮</span>
-                    {isLoading ? 'Loading...' : 'Try as User'}
+                    <span role="img" aria-hidden="true">
+                      🎮
+                    </span>
+                    {isLoading ? "Loading..." : "Try as User"}
                   </button>
-                  <button 
+                  <button
                     className="demo-button caregiver-demo"
-                    onClick={() => handleDemoAccess('caregiver')}
+                    onClick={() => handleDemoAccess("caregiver")}
                     disabled={isLoading}
                   >
-                    <span role="img" aria-hidden="true">🎮</span>
-                    {isLoading ? 'Loading...' : 'Try as Caregiver'}
+                    <span role="img" aria-hidden="true">
+                      🎮
+                    </span>
+                    {isLoading ? "Loading..." : "Try as Caregiver"}
                   </button>
                 </div>
               </div>
@@ -563,19 +670,39 @@ const OnboardingPage = ({ onSelectUserType }) => {
         <h2 className="section-title">Designed for Accessibility</h2>
         <div className="features-list">
           <div className="feature-item">
-            <span className="feature-icon" role="img" aria-label="Large text">🔍</span>
+            <span className="feature-icon" role="img" aria-label="Large text">
+              🔍
+            </span>
             <span>Adjustable text size</span>
           </div>
           <div className="feature-item">
-            <span className="feature-icon" role="img" aria-label="High contrast">🌈</span>
+            <span
+              className="feature-icon"
+              role="img"
+              aria-label="High contrast"
+            >
+              🌈
+            </span>
             <span>High contrast mode</span>
           </div>
           <div className="feature-item">
-            <span className="feature-icon" role="img" aria-label="Voice control">🎤</span>
+            <span
+              className="feature-icon"
+              role="img"
+              aria-label="Voice control"
+            >
+              🎤
+            </span>
             <span>Voice assistance</span>
           </div>
           <div className="feature-item">
-            <span className="feature-icon" role="img" aria-label="Simple interface">👍</span>
+            <span
+              className="feature-icon"
+              role="img"
+              aria-label="Simple interface"
+            >
+              👍
+            </span>
             <span>Simple, clear interface</span>
           </div>
         </div>
