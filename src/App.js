@@ -13,6 +13,7 @@ import CaregiverDashboard from "./pages/CaregiverDashboard";
 import RequestSupport from "./pages/RequestSupport";
 import SettingsPage from "./pages/SettingsPage";
 import AccessibilityToolbar from "./components/AccessibilityToolbar";
+import AIChatbot from "./components/AIChatbot";
 import MessagesPage from "./pages/MessagesPage";
 import "./App.css";
 
@@ -228,6 +229,11 @@ function App() {
           />
         </Routes>
       </Router>
+
+      {/* AI Chatbot - Only show for authenticated users */}
+      {userType && userData && (
+        <AIChatbot userData={userData} fetchWithAuth={fetchWithAuth} />
+      )}
     </div>
   );
 }

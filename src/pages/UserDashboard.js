@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API_ENDPOINTS from "../config/api";
 import { fetchWithAuth } from "../App";
+import AIHealthInsights from "../components/AIHealthInsights";
 import "./UserDashboard.css";
 
 const UserDashboard = ({ userData, onLogout }) => {
@@ -16,8 +17,148 @@ const UserDashboard = ({ userData, onLogout }) => {
   ]);
 
   const [mood, setMood] = useState(null);
-  const [appointments, setAppointments] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [appointments, setAppointments] = useState([
+    {
+      id: 1,
+      time: "Today, 2:00 PM",
+      title: "Physical Therapy Session",
+      icon: "🦵",
+      caregiverName: "Sarah Johnson, PT",
+      type: "Therapy",
+      location: "Home Visit",
+      duration: "60 min",
+      notes: "Focus on leg strengthening exercises",
+    },
+    {
+      id: 2,
+      time: "Today, 6:00 PM",
+      title: "Family Video Call",
+      icon: "👨‍👩‍👧‍👦",
+      caregiverName: "Family Members",
+      type: "Personal",
+      location: "Video Call",
+      duration: "30 min",
+      notes: "Weekly family check-in",
+    },
+    {
+      id: 3,
+      time: "Tomorrow, 10:00 AM",
+      title: "Doctor Check-up",
+      icon: "👨‍⚕️",
+      caregiverName: "Dr. Michael Chen",
+      type: "Medical",
+      location: "City Medical Center",
+      duration: "45 min",
+      notes: "Routine blood pressure check",
+    },
+    {
+      id: 4,
+      time: "Tomorrow, 2:30 PM",
+      title: "Nutrition Consultation",
+      icon: "🥗",
+      caregiverName: "Lisa Martinez, RD",
+      type: "Nutrition",
+      location: "Telehealth",
+      duration: "30 min",
+      notes: "Review weekly meal plan",
+    },
+    {
+      id: 5,
+      time: "Friday, 9:00 AM",
+      title: "Blood Work",
+      icon: "🩸",
+      caregiverName: "City Lab Services",
+      type: "Medical",
+      location: "Downtown Lab",
+      duration: "30 min",
+      notes: "Fasting required, arrive 15 min early",
+    },
+    {
+      id: 6,
+      time: "Friday, 3:30 PM",
+      title: "Home Cleaning Service",
+      icon: "🏠",
+      caregiverName: "HomeCare Services",
+      type: "Home Care",
+      location: "Home",
+      duration: "90 min",
+      notes: "Deep cleaning of kitchen and bathroom",
+    },
+    {
+      id: 7,
+      time: "Next Monday, 11:00 AM",
+      title: "Cardiac Rehab Session",
+      icon: "❤️",
+      caregiverName: "Cardiac Wellness Center",
+      type: "Therapy",
+      location: "Wellness Center",
+      duration: "60 min",
+      notes: "Light exercise and monitoring",
+    },
+    {
+      id: 8,
+      time: "Next Tuesday, 1:00 PM",
+      title: "Pharmacy Pickup",
+      icon: "💊",
+      caregiverName: "MediCare Pharmacy",
+      type: "Pharmacy",
+      location: "MediCare Pharmacy",
+      duration: "15 min",
+      notes: "Prescription refill ready",
+    },
+  ]);
+
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      senderName: "Sarah Johnson",
+      preview:
+        "Don't forget your physical therapy at 2 PM today! I'll be there to assist you.",
+      timestamp: "2 hours ago",
+      unread: true,
+      avatar: "👩‍⚕️",
+      type: "caregiver",
+    },
+    {
+      id: 2,
+      senderName: "Dr. Michael Chen",
+      preview:
+        "Your test results look great! Keep up the good work with your exercises.",
+      timestamp: "Yesterday",
+      unread: false,
+      avatar: "👨‍⚕️",
+      type: "doctor",
+    },
+    {
+      id: 3,
+      senderName: "MediCare Pharmacy",
+      preview:
+        "Your prescription refill for Lisinopril is ready for pickup until 6 PM.",
+      timestamp: "2 days ago",
+      unread: false,
+      avatar: "💊",
+      type: "pharmacy",
+    },
+    {
+      id: 4,
+      senderName: "Family Support Group",
+      preview: "Weekly check-in: How is everyone doing? Any updates to share?",
+      timestamp: "3 days ago",
+      unread: true,
+      avatar: "👨‍👩‍👧‍👦",
+      type: "family",
+    },
+    {
+      id: 5,
+      senderName: "City Transport",
+      preview:
+        "Medical transport confirmed for tomorrow at 9 AM. Driver: Maria Gonzalez.",
+      timestamp: "4 days ago",
+      unread: false,
+      avatar: "🚗",
+      type: "transport",
+    },
+  ]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
@@ -311,6 +452,9 @@ const UserDashboard = ({ userData, onLogout }) => {
           </div>
         </div>
       </div>
+
+      {/* AI Health Insights */}
+      <AIHealthInsights userData={userData} />
     </div>
   );
 };

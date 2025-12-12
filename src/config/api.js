@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   USERS_BY_ID: (id) => `${API_BASE_URL}/users/${id}`,
   USERS_UPDATE: (id) => `${API_BASE_URL}/users/${id}`,
   USERS_DELETE: (id) => `${API_BASE_URL}/users/${id}`,
+  USERS_AI_INSIGHTS: (id) => `${API_BASE_URL}/users/${id}/ai-insights`,
 
   // Patients routes
   PATIENTS_ALL: `${API_BASE_URL}/patients`,
